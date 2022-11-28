@@ -2,7 +2,9 @@
 using OpenWeatherMap.NetClient.Extensions;
 using OpenWeatherMap.NetClient.Models;
 using System.Globalization;
+using WeatherAppLearning.Abstractions;
 using WeatherAppLearning.Pages;
+using WeatherAppLearning.Services;
 using WeatherAppLearning.ViewModels;
 
 namespace WeatherAppLearning;
@@ -29,6 +31,8 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<CurrentWeatherPage>();
 		builder.Services.AddSingleton<OptionsPage>();
+        builder.Services.AddSingleton<AppShellViewModel>();
+        builder.Services.AddSingleton<ISettings, Settings>();
 
         builder.Services.AddSingleton<CurrentWeatherPageViewModel>();
         builder.Services.AddSingleton<OptionsPageViewModel>();

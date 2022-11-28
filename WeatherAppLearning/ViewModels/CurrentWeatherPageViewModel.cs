@@ -6,8 +6,6 @@ using CommunityToolkit.Mvvm.Input;
 using WeatherAppLearning.Services;
 using WeatherAppLearning.Models;
 using System.Collections.ObjectModel;
-using Microsoft.VisualBasic;
-using OpenWeatherMap.NetClient.Models;
 
 namespace WeatherAppLearning.ViewModels;
 
@@ -20,43 +18,44 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
         WeakReferenceMessenger.Default.Register(this);
     }
     private readonly IOpenWeatherMap _openWeatherMap;
-    private readonly GetIconAndColorsService getIconAndColorsService = new GetIconAndColorsService();
-    private readonly FiveDayForecastByDaysService fiveDayForecastByDaysService = new FiveDayForecastByDaysService();
+    private readonly GetIconAndColorsService _getIconAndColorsService = new();
+    private readonly FiveDayForecastByDaysService _fiveDayForecastByDaysService = new();
 
     [ObservableProperty]
-    Color gradientColorOne = Color.FromRgba("#8DA2DB");
+    Color _gradientColorOne = Color.FromRgba("#8DA2DB");
 
     [ObservableProperty]
-    Color gradientColorTwo = Color.FromRgba("#6378AE");
+    Color _gradientColorTwo = Color.FromRgba("#6378AE");
 
     [ObservableProperty]
-    string imageLocation = "clear_d.png";
+    string _imageLocation = "clear_d.png";
 
     [ObservableProperty]
-    string cityName;
+    string _cityName;
 
     [ObservableProperty]
-    string precipitationProbability;
+    string _precipitationProbability;
 
     [ObservableProperty]
-    string temperature;
+    string _temperature;
 
     [ObservableProperty]
-    string temperatureMax;
+    string _temperatureMax;
 
     [ObservableProperty]
-    string temperatureMin;
+    string _temperatureMin;
 
     [ObservableProperty]
-    string temperatureFeelsLike;
+    string _temperatureFeelsLike;
 
     [ObservableProperty]
-    string sunriseTime;
+    string _sunriseTime;
 
     [ObservableProperty]
-    string sunsetTime;
+    string _sunsetTime;
+
     [ObservableProperty]
-    ObservableCollection<FiveDayWeatherModel> fiveDayWeather;
+    private ObservableCollection<FiveDayWeatherModel> _fiveDayWeather;
 
     public ObservableCollection<DayTimeWeatherModel> DaytimeWeather { get; } = new();
 
@@ -67,16 +66,22 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
         {
             CityName = Preferences.Default.Get("city_name","New York");
         }
-        if (!Preferences.Default.ContainsKey("city_name"))
-        {
-            Location location = await Geolocation.Default.GetLastKnownLocationAsync();
-            var weatherForecast = await _openWeatherMap.CurrentWeather.GetByCoordinatesAsync(location.Latitude, location.Longitude);
-
-            CityName = weatherForecast.CityName;
-        }
 
         try
         {
+            if (!Preferences.Default.ContainsKey("city_name"))
+            {
+                var location = await Geolocation.Default.GetLastKnownLocationAsync() ??
+                               await Geolocation.Default.GetLocationAsync();
+
+                var weatherForecastByCoordinatesAsync =
+                    await _openWeatherMap.CurrentWeather.GetByCoordinatesAsync(location!.Latitude, location.Longitude);
+
+                CityName = weatherForecastByCoordinatesAsync is null
+                    ? "New York"
+                    : weatherForecastByCoordinatesAsync.CityName;
+            }
+
             var weatherForecast = await _openWeatherMap.CurrentWeather.QueryAsync(CityName);
 
             Temperature = weatherForecast.Temperature.DegreesCelsius.ToString("#°");
@@ -95,28 +100,28 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
                 var forecast = fiveDayWeather.Forecast.ElementAt(i);
                 DaytimeWeather.Add(new DayTimeWeatherModel(
                     forecast.Temperature.DegreesCelsius,
-                    getIconAndColorsService.GetIconAndColors(forecast.WeatherConditionId, forecast.WeatherIcon).imageSourse,
+                    _getIconAndColorsService.GetIconAndColors(forecast.WeatherConditionId, forecast.WeatherIcon).imageSourse,
                     forecast.ForecastTimeStamp,
                     forecast.PrecipitationProbability.Value));
             }
 
-            FiveDayWeather = fiveDayForecastByDaysService.GetSortedFiveDayForecast(fiveDayWeather);
+            FiveDayWeather = _fiveDayForecastByDaysService.GetSortedFiveDayForecast(fiveDayWeather);
         }
         catch (FeatureNotSupportedException)
         {
-            await Application.Current.MainPage.DisplayAlert("Не поддерживается", "На вашем устройстве нет функции геолокации. Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Не поддерживается", "На вашем устройстве нет функции геолокации. Выберите город в настройках", "OK");
         }
         catch (FeatureNotEnabledException)
         {
-            await Application.Current.MainPage.DisplayAlert("Геопозиция выключена", "Определение геопозиции отключено. Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Геопозиция выключена", "Определение геопозиции отключено. Выберите город в настройках", "OK");
         }
         catch (PermissionException)
         {
-            await Application.Current.MainPage.DisplayAlert("Разрешение отклонено", "Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Разрешение отклонено", "Выберите город в настройках", "OK");
         }
         catch (Exception)
         {
-            await Application.Current.MainPage.DisplayAlert("Ошибка геолокации", "Не удалось найти город по геолокации. Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Ошибка геолокации", "Не удалось найти город по геолокации. Выберите город в настройках", "OK");
         }
     }
 
@@ -137,7 +142,7 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
             var icon = weather.WeatherIcon;
 
 
-            var imageAndColors = getIconAndColorsService.GetIconAndColors(id, icon);
+            var imageAndColors = _getIconAndColorsService.GetIconAndColors(id, icon);
 
             ImageLocation = imageAndColors.imageSourse;
             GradientColorOne = imageAndColors.gradientColorOne;
@@ -154,12 +159,12 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
                 var forecast = fiveDayWeather.Forecast.ElementAt(i);
                 DaytimeWeather.Add(new DayTimeWeatherModel(
                     forecast.Temperature.DegreesCelsius,
-                    getIconAndColorsService.GetIconAndColors(forecast.WeatherConditionId, forecast.WeatherIcon).imageSourse,
+                    _getIconAndColorsService.GetIconAndColors(forecast.WeatherConditionId, forecast.WeatherIcon).imageSourse,
                     forecast.ForecastTimeStamp,
                     forecast.PrecipitationProbability.Value));
             }
 
-            FiveDayWeather = fiveDayForecastByDaysService.GetSortedFiveDayForecast(fiveDayWeather);
+            FiveDayWeather = _fiveDayForecastByDaysService.GetSortedFiveDayForecast(fiveDayWeather);
 
             TemperatureMax = weatherForecast.TemperatureMax.DegreesCelsius.ToString("#°");
             TemperatureMin = weatherForecast.TemperatureMin.DegreesCelsius.ToString("#°");
@@ -169,11 +174,11 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
             SunsetTime = weatherForecast.Sunset.ToLocalTime().ToString("HH:mm");
 
             await Shell.Current.GoToAsync("//currentWeatherPage");
-            await Application.Current.MainPage.DisplayAlert("Настройки применены", "Город изменен", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Настройки применены", "Город изменен", "OK");
         }
         catch
         {
-            await Application.Current.MainPage.DisplayAlert("Не найдено", "Указанный город не найден", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Не найдено", "Указанный город не найден", "OK");
         }
 
     }
