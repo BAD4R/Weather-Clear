@@ -8,18 +8,19 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewModels="clr-namespace:WeatherAppLearning.ViewModels"
     x:DataType="viewModels:CurrentWeatherPageViewModel"
-    Shell.BackgroundColor="{Binding GradientColorOne, Mode=OneWay}">
+    Shell.BackgroundColor="{Binding CurrentWeatherModel.GradientColorOne, Mode=OneWay}">
+
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior Command="{Binding CurrentWeatherPageLoadedCommand}" EventName="Loaded" />
-        <mct:StatusBarBehavior x:Name="StatusBar" StatusBarColor="{Binding GradientColorOne, Mode=OneWay}" />
+        <mct:StatusBarBehavior x:Name="StatusBar" StatusBarColor="{Binding CurrentWeatherModel.GradientColorOne, Mode=OneWay}" />
     </ContentPage.Behaviors>
     <ScrollView>
 
         <VerticalStackLayout>
             <VerticalStackLayout.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Offset="0.0" Color="{Binding GradientColorOne}" />
-                    <GradientStop Offset="1.0" Color="{Binding GradientColorTwo}" />
+                    <GradientStop Offset="0.0" Color="{Binding CurrentWeatherModel.GradientColorOne}" />
+                    <GradientStop Offset="1.0" Color="{Binding CurrentWeatherModel.GradientColorTwo}" />
                 </LinearGradientBrush>
             </VerticalStackLayout.Background>
 
@@ -28,26 +29,26 @@
                     <Label
                         Margin="30,0,20,0"
                         FontSize="48"
-                        Text="{Binding Temperature}" />
+                        Text="{Binding CurrentWeatherModel.Temperature}" />
                     <Label
                         Margin="30,0,20,20"
                         FontSize="16"
-                        Text="{Binding CityName}"
+                        Text="{Binding CurrentWeatherModel.CityName}"
                         TextTransform="Uppercase" />
                     <HorizontalStackLayout Margin="30,0">
-                        <Label FontSize="12" Text="{Binding TemperatureMax}" />
+                        <Label FontSize="12" Text="{Binding CurrentWeatherModel.TemperatureMax}" />
                         <Label Text=" / " />
-                        <Label FontSize="12" Text="{Binding TemperatureMin}" />
+                        <Label FontSize="12" Text="{Binding CurrentWeatherModel.TemperatureMin}" />
                         <Label
                             Margin="5,0"
                             FontSize="12"
-                            Text="{Binding TemperatureFeelsLike, StringFormat=' Ощущается как {0}'}" />
+                            Text="{Binding CurrentWeatherModel.TemperatureFeelsLike, StringFormat=' Ощущается как {0}'}" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <Image
                     Grid.Column="1"
                     HeightRequest="60"
-                    Source="{Binding ImageLocation}"
+                    Source="{Binding CurrentWeatherModel.ImageLocation}"
                     VerticalOptions="Start">
                     <Image.Shadow>
                         <Shadow
@@ -107,15 +108,14 @@
                 StrokeShape="RoundRectangle 20, 20, 20, 20"
                 VerticalOptions="FillAndExpand">
                 <Grid ColumnDefinitions="*,*">
-
                     <VerticalStackLayout>
                         <Label HorizontalOptions="Center" Text="Восход" />
-                        <Label HorizontalOptions="Center" Text="{Binding SunriseTime}" />
+                        <Label HorizontalOptions="Center" Text="{Binding CurrentWeatherModel.SunriseTime}" />
                         <Image HeightRequest="30" Source="sunrise.png" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1">
                         <Label HorizontalOptions="Center" Text="Закат" />
-                        <Label HorizontalOptions="Center" Text="{Binding SunsetTime}" />
+                        <Label HorizontalOptions="Center" Text="{Binding CurrentWeatherModel.SunsetTime}" />
                         <Image HeightRequest="30" Source="sunset.png" />
                     </VerticalStackLayout>
                 </Grid>

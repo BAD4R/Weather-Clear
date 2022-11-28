@@ -1,30 +1,21 @@
-﻿namespace WeatherAppLearning.Models;
+﻿using OpenWeatherMap.NetClient.Models;
+using WeatherAppLearning.Services;
 
-public class DayTimeWeatherModel
+namespace WeatherAppLearning.Models;
+
+public struct DayTimeWeatherModel
 {
-    public DayTimeWeatherModel(double temperatureLong, string imageSource, DateTime timeStamp, double precipitationProbabilityPercent)
+    public DayTimeWeatherModel(Forecast5Days.Weather weather)
     {
-        TemperatureLong = temperatureLong;
-        ImageSource = imageSource;
-        TimeStamp = timeStamp;
-        PrecipitationProbabilityPercent = precipitationProbabilityPercent;
-    }
-    public string Time
-    {
-        get { return TimeStamp.ToString("HH:mm"); }
+        Time = weather.ForecastTimeStamp.ToString("HH:mm");
+        Temperature = weather.Temperature.DegreesCelsius.ToString("0°");
+        PrecipitationProbability = (weather.PrecipitationProbability.Value * 100).ToString("0") + "%";
+
+        ImageSource = GetWeatherIconService.GetIconAndColors(weather.WeatherConditionId, weather.WeatherIcon).imageSource;
     }
 
-    public string Temperature
-    {
-        get { return TemperatureLong.ToString("0°"); }
-    }
-    public string PrecipitationProbability
-    {
-        get { return (PrecipitationProbabilityPercent*100).ToString("0")+"%"; }
-    }
-
-    public double TemperatureLong { get; }
-    public string ImageSource{ get; }
-    public DateTime TimeStamp { get; }
-    public double PrecipitationProbabilityPercent { get; }
+    public string Time { get; }
+    public string Temperature { get; }
+    public string PrecipitationProbability { get; }
+    public string ImageSource { get; }
 }

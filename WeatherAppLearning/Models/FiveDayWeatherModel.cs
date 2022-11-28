@@ -1,43 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace WeatherAppLearning.Models;
 
-namespace WeatherAppLearning.Models;
-
-public class FiveDayWeatherModel
+public struct FiveDayWeatherModel
 {
     public FiveDayWeatherModel(double temperatureMaxLong, double temperatureMinLong, double precipitationProbabilityPercent, DateTime dateTime)
     {
-        TemperatureMaxLong = temperatureMaxLong;
-        TemperatureMinLong = temperatureMinLong;
-        PrecipitationProbabilityPercent = precipitationProbabilityPercent;
-        DateTime = dateTime;
+        Date = dateTime.ToString("MM.dd");
+        TemperatureMax = temperatureMaxLong.ToString("0°");
+        TemperatureMin = temperatureMinLong.ToString("0°");
+        PrecipitationProbability = (precipitationProbabilityPercent*100).ToString("0")+"%";
     }
 
-    public string Date
-    {
-        get { return DateTime.ToString("MM.dd"); }
-    }
-
-    public string TemperatureMax
-    {
-        get { return TemperatureMaxLong.ToString("0°"); }
-    }
-
-    public string TemperatureMin
-    {
-        get { return TemperatureMinLong.ToString("0°"); }
-    }
-
-    public string PrecipitationProbability
-    {
-        get { return (PrecipitationProbabilityPercent*100).ToString("0")+"%"; }
-    }
-
-    public double TemperatureMaxLong { get; }
-    public double TemperatureMinLong { get; }
-    public double PrecipitationProbabilityPercent { get; }
-    public DateTime DateTime { get; }
+    public string Date { get; }
+    public string TemperatureMax { get; }
+    public string TemperatureMin { get; }
+    public string PrecipitationProbability { get; }
 }
