@@ -12,20 +12,20 @@
     x:TypeArguments="viewModels:CurrentWeatherPageViewModel"
     Shell.BackgroundColor="{Binding CurrentWeatherModel.GradientColorOne, Mode=OneWay}">
 
+    <Page.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Offset="0.0" Color="{Binding CurrentWeatherModel.GradientColorOne}" />
+            <GradientStop Offset="1.0" Color="{Binding CurrentWeatherModel.GradientColorTwo}" />
+        </LinearGradientBrush>
+    </Page.Background>
+
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior Command="{Binding CurrentWeatherPageLoadedCommand}" EventName="Loaded" />
         <mct:StatusBarBehavior x:Name="StatusBar" StatusBarColor="{Binding CurrentWeatherModel.GradientColorOne, Mode=OneWay}" />
     </ContentPage.Behaviors>
 
     <ScrollView>
-        <VerticalStackLayout>
-            <VerticalStackLayout.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Offset="0.0" Color="{Binding CurrentWeatherModel.GradientColorOne}" />
-                    <GradientStop Offset="1.0" Color="{Binding CurrentWeatherModel.GradientColorTwo}" />
-                </LinearGradientBrush>
-            </VerticalStackLayout.Background>
-
+        <VerticalStackLayout Spacing="10">
             <Grid ColumnDefinitions="*,*">
                 <VerticalStackLayout>
                     <Label
@@ -62,7 +62,7 @@
             </Grid>
 
             <Border
-                Margin="20,60,20,10"
+                Margin="0,50,0,0"
                 Padding="10"
                 Background="#40ffffff"
                 Stroke="#10ffffff"
@@ -103,7 +103,6 @@
                 </CollectionView>
             </Border>
             <Border
-                Margin="20,0"
                 Padding="10"
                 Background="#40ffffff"
                 Stroke="#10ffffff"
@@ -125,7 +124,6 @@
             </Border>
 
             <Border
-                Margin="20,10"
                 Padding="10"
                 Background="#40ffffff"
                 Stroke="#10ffffff"
