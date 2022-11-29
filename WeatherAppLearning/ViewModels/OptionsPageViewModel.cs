@@ -1,39 +1,21 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using WeatherAppLearning.Abstractions;
 using WeatherAppLearning.Messages;
 
 namespace WeatherAppLearning.ViewModels;
 
-public partial class OptionsPageViewModel : ObservableObject, IRecipient<ChangeGradientColorsMessage>
+public partial class OptionsPageViewModel : GradientViewModelBase
 {
-    public OptionsPageViewModel()
-    {
-        WeakReferenceMessenger.Default.Register(this);
-    }
-
-    [ObservableProperty]
-    Color gradientColorOne = Color.FromRgba("#8DA2DB");
-
-    [ObservableProperty]
-    Color gradientColorTwo = Color.FromRgba("#6378AE");
-
-    public void Receive(ChangeGradientColorsMessage message)
-    {
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            GradientColorOne = message.Value.Item1;
-            GradientColorTwo = message.Value.Item2;
-        });
-    }
     [RelayCommand]
-    async Task ChangeCityName(string args)
+    private async Task ChangeCityName(string args)
     {
-        if(args != null)
-            WeakReferenceMessenger.Default.Send(new ChangeCityNameMessage(args));
-        if(args == null)
+        if(string.IsNullOrEmpty(args))
         {
-            await Application.Current.MainPage.DisplayAlert("Пусто!", "Укажите название города", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Пусто!", "Укажите название города", "OK");
+            return;
         }
+
+        WeakReferenceMessenger.Default.Send(new ChangeCityNameMessage(args));
     }
 }

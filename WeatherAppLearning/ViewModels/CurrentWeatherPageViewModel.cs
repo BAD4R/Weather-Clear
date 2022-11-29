@@ -11,14 +11,12 @@ using WeatherAppLearning.Extensions;
 
 namespace WeatherAppLearning.ViewModels;
 
-public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<ChangeCityNameMessage>
+public partial class CurrentWeatherPageViewModel : ObservableRecipient, IRecipient<ChangeCityNameMessage>
 {
     public CurrentWeatherPageViewModel(IOpenWeatherMap openWeatherMap, ISettings settings)
     {
         _openWeatherMap = openWeatherMap;
         _settings = settings;
-
-        WeakReferenceMessenger.Default.Register(this);
     }
     private readonly IOpenWeatherMap _openWeatherMap;
     private readonly ISettings _settings;

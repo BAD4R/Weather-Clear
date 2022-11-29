@@ -2,13 +2,12 @@ using WeatherAppLearning.ViewModels;
 
 namespace WeatherAppLearning.Pages;
 
-public partial class OptionsPage : ContentPage
+public partial class OptionsPage
 {
-	public OptionsPage(OptionsPageViewModel viewModel)
-	{
-		InitializeComponent();
+    public OptionsPage(OptionsPageViewModel viewModel) : base(viewModel)
+    {
+        InitializeComponent();
 
-		BindingContext = viewModel;
-		StatusBar.BindingContext = viewModel;
+        StatusBar.BindingContext = viewModel;
     }
 }

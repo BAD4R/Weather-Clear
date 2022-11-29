@@ -8,7 +8,9 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 
-		BindingContext = viewModel;
-		FlyoutBackground.BindingContext = viewModel;
+        BindingContext = viewModel;
+        FlyoutBackground.BindingContext = viewModel;
+
+        viewModel.IsActive = true;
     }
 }

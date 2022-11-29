@@ -2,13 +2,12 @@ using WeatherAppLearning.ViewModels;
 
 namespace WeatherAppLearning.Pages;
 
-public partial class CurrentWeatherPage : ContentPage
+public partial class CurrentWeatherPage
 {
-	public CurrentWeatherPage(CurrentWeatherPageViewModel viewModel)
-	{
-		InitializeComponent();
+    public CurrentWeatherPage(CurrentWeatherPageViewModel viewModel) : base(viewModel)
+    {
+        InitializeComponent();
 
-		BindingContext = viewModel;
-		StatusBar.BindingContext = viewModel;
-	}
+        StatusBar.BindingContext = viewModel;
+    }
 }
