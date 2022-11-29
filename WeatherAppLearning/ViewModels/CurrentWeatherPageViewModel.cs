@@ -1,180 +1,117 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using WeatherAppLearning.Messages;
-using OpenWeatherMap.NetClient;
-using CommunityToolkit.Mvvm.Input;
-using WeatherAppLearning.Services;
-using WeatherAppLearning.Models;
-using System.Collections.ObjectModel;
-using Microsoft.VisualBasic;
-using OpenWeatherMap.NetClient.Models;
+﻿namespace WeatherAppLearning.ViewModels;
 
-namespace WeatherAppLearning.ViewModels;
-
-public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<ChangeCityNameMessage>
+public partial class CurrentWeatherPageViewModel : ObservableRecipient, IRecipient<ChangeCityNameMessage>
 {
-    public CurrentWeatherPageViewModel(IOpenWeatherMap openWeatherMap)
+    public CurrentWeatherPageViewModel(IOpenWeatherMap openWeatherMap, ISettings settings)
     {
         _openWeatherMap = openWeatherMap;
+        _settings = settings;
 
-        WeakReferenceMessenger.Default.Register(this);
+        _currentWeatherModel = settings.CurrentWeather;
+        _fiveDayWeather = settings.FiveDayWeather;
+        DaytimeWeather = new ObservableCollection<DayTimeWeatherModel>(settings.DaytimeWeather);
     }
+
+    private const string DefaultCityName = "New York";
+
     private readonly IOpenWeatherMap _openWeatherMap;
-    private readonly GetIconAndColorsService getIconAndColorsService = new GetIconAndColorsService();
-    private readonly FiveDayForecastByDaysService fiveDayForecastByDaysService = new FiveDayForecastByDaysService();
+    private readonly ISettings _settings;
 
     [ObservableProperty]
-    Color gradientColorOne = Color.FromRgba("#8DA2DB");
+    private CurrentWeatherPageModel _currentWeatherModel;
 
     [ObservableProperty]
-    Color gradientColorTwo = Color.FromRgba("#6378AE");
+    private IReadOnlyList<FiveDayWeatherModel> _fiveDayWeather;
 
-    [ObservableProperty]
-    string imageLocation = "clear_d.png";
-
-    [ObservableProperty]
-    string cityName;
-
-    [ObservableProperty]
-    string precipitationProbability;
-
-    [ObservableProperty]
-    string temperature;
-
-    [ObservableProperty]
-    string temperatureMax;
-
-    [ObservableProperty]
-    string temperatureMin;
-
-    [ObservableProperty]
-    string temperatureFeelsLike;
-
-    [ObservableProperty]
-    string sunriseTime;
-
-    [ObservableProperty]
-    string sunsetTime;
-    [ObservableProperty]
-    ObservableCollection<FiveDayWeatherModel> fiveDayWeather;
-
-    public ObservableCollection<DayTimeWeatherModel> DaytimeWeather { get; } = new();
+    public ObservableCollection<DayTimeWeatherModel> DaytimeWeather { get; }
 
     [RelayCommand]
-    async Task CurrentWeatherPageLoaded()
+    private async Task CurrentWeatherPageLoaded()
     {
-        if (Preferences.Default.ContainsKey("city_name"))
-        {
-            CityName = Preferences.Default.Get("city_name","New York");
-        }
-        if (!Preferences.Default.ContainsKey("city_name"))
-        {
-            Location location = await Geolocation.Default.GetLastKnownLocationAsync();
-            var weatherForecast = await _openWeatherMap.CurrentWeather.GetByCoordinatesAsync(location.Latitude, location.Longitude);
-
-            CityName = weatherForecast.CityName;
-        }
-
         try
         {
-            var weatherForecast = await _openWeatherMap.CurrentWeather.QueryAsync(CityName);
+            var cityName = CurrentWeatherModel.CityName;
 
-            Temperature = weatherForecast.Temperature.DegreesCelsius.ToString("#°");
-            TemperatureMax = weatherForecast.TemperatureMax.DegreesCelsius.ToString("#°");
-            TemperatureMin = weatherForecast.TemperatureMin.DegreesCelsius.ToString("#°");
-            TemperatureFeelsLike = weatherForecast.TemperatureFeelsLike.DegreesCelsius.ToString("#°");
-
-            SunriseTime = weatherForecast.Sunrise.ToLocalTime().ToString("HH:mm");
-            SunsetTime = weatherForecast.Sunset.ToLocalTime().ToString("HH:mm");
-
-            var fiveDayWeather = await _openWeatherMap.Forecast5Days.QueryAsync(CityName);
-
-            DaytimeWeather.Clear();
-            for (int i = 0; i < 9; i++)
+            if (string.IsNullOrEmpty(cityName))
             {
-                var forecast = fiveDayWeather.Forecast.ElementAt(i);
-                DaytimeWeather.Add(new DayTimeWeatherModel(
-                    forecast.Temperature.DegreesCelsius,
-                    getIconAndColorsService.GetIconAndColors(forecast.WeatherConditionId, forecast.WeatherIcon).imageSourse,
-                    forecast.ForecastTimeStamp,
-                    forecast.PrecipitationProbability.Value));
+                var location = await Geolocation.Default.GetLastKnownLocationAsync() ??
+                               await Geolocation.Default.GetLocationAsync();
+
+                var weatherForecastByCoordinatesAsync =
+                    await _openWeatherMap.CurrentWeather.GetByCoordinatesAsync(location!.Latitude, location.Longitude);
+
+                cityName = weatherForecastByCoordinatesAsync is null
+                    ? DefaultCityName
+                    : weatherForecastByCoordinatesAsync.CityName;
             }
 
-            FiveDayWeather = fiveDayForecastByDaysService.GetSortedFiveDayForecast(fiveDayWeather);
+            var weatherForecast = (await _openWeatherMap.CurrentWeather.QueryAsync(cityName))!;
+            CurrentWeatherModel = new CurrentWeatherPageModel(weatherForecast);
+
+            await InitializeFiveDayWeather(cityName);
         }
         catch (FeatureNotSupportedException)
         {
-            await Application.Current.MainPage.DisplayAlert("Не поддерживается", "На вашем устройстве нет функции геолокации. Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Не поддерживается", "На вашем устройстве нет функции геолокации. Выберите город в настройках", "OK");
         }
         catch (FeatureNotEnabledException)
         {
-            await Application.Current.MainPage.DisplayAlert("Геопозиция выключена", "Определение геопозиции отключено. Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Геопозиция выключена", "Определение геопозиции отключено. Выберите город в настройках", "OK");
         }
         catch (PermissionException)
         {
-            await Application.Current.MainPage.DisplayAlert("Разрешение отклонено", "Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Разрешение отклонено", "Выберите город в настройках", "OK");
         }
         catch (Exception)
         {
-            await Application.Current.MainPage.DisplayAlert("Ошибка геолокации", "Не удалось найти город по геолокации. Выберите город в настройках", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Ошибка геолокации", "Не удалось найти город по геолокации. Выберите город в настройках", "OK");
         }
     }
 
     public async void Receive(ChangeCityNameMessage message)
     {
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            CityName = message.Value;
-            Preferences.Default.Set("city_name", message.Value);
-        });
-
         try
         {
-            var weather = await _openWeatherMap.CurrentWeather.QueryAsync(CityName);
-            Temperature = weather.Temperature.DegreesCelsius.ToString("#°");
-
-            var id = weather.WeatherConditionId;
-            var icon = weather.WeatherIcon;
-
-
-            var imageAndColors = getIconAndColorsService.GetIconAndColors(id, icon);
-
-            ImageLocation = imageAndColors.imageSourse;
-            GradientColorOne = imageAndColors.gradientColorOne;
-            GradientColorTwo = imageAndColors.gradientColorTwo;
-
-            WeakReferenceMessenger.Default.Send(new ChangeGradientColorsMessage((GradientColorOne, GradientColorTwo)));
-
-            var fiveDayWeather = await _openWeatherMap.Forecast5Days.QueryAsync(CityName);
-            var weatherForecast = await _openWeatherMap.CurrentWeather.QueryAsync(CityName);
-
-            DaytimeWeather.Clear();
-            for (int i = 0; i < 9; i++)
+            var weather = await _openWeatherMap.CurrentWeather.QueryAsync(message.Value);
+            if (weather is null)
             {
-                var forecast = fiveDayWeather.Forecast.ElementAt(i);
-                DaytimeWeather.Add(new DayTimeWeatherModel(
-                    forecast.Temperature.DegreesCelsius,
-                    getIconAndColorsService.GetIconAndColors(forecast.WeatherConditionId, forecast.WeatherIcon).imageSourse,
-                    forecast.ForecastTimeStamp,
-                    forecast.PrecipitationProbability.Value));
+                await Application.Current!.MainPage!.DisplayAlert("Не найдено", "Указанный город не найден", "OK");
+                return;
             }
 
-            FiveDayWeather = fiveDayForecastByDaysService.GetSortedFiveDayForecast(fiveDayWeather);
-
-            TemperatureMax = weatherForecast.TemperatureMax.DegreesCelsius.ToString("#°");
-            TemperatureMin = weatherForecast.TemperatureMin.DegreesCelsius.ToString("#°");
-            TemperatureFeelsLike = weatherForecast.TemperatureFeelsLike.DegreesCelsius.ToString("#°");
-
-            SunriseTime = weatherForecast.Sunrise.ToLocalTime().ToString("HH:mm");
-            SunsetTime = weatherForecast.Sunset.ToLocalTime().ToString("HH:mm");
+            CurrentWeatherModel = new CurrentWeatherPageModel(weather);
+            WeakReferenceMessenger.Default.Send(new ChangeGradientColorsMessage((CurrentWeatherModel.GradientColorOne, CurrentWeatherModel.GradientColorTwo)));
+            
+            await InitializeFiveDayWeather(message.Value);
 
             await Shell.Current.GoToAsync("//currentWeatherPage");
-            await Application.Current.MainPage.DisplayAlert("Настройки применены", "Город изменен", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Настройки применены", "Город изменен", "OK");
         }
         catch
         {
-            await Application.Current.MainPage.DisplayAlert("Не найдено", "Указанный город не найден", "OK");
+            await Application.Current!.MainPage!.DisplayAlert("Не найдено", "Указанный город не найден", "OK");
+        }
+    }
+
+    private async ValueTask InitializeFiveDayWeather(string cityName)
+    {
+        DaytimeWeather.Clear();
+        var fiveDayWeather = await _openWeatherMap.Forecast5Days.QueryAsync(cityName);
+
+        foreach (var weather in fiveDayWeather!.Forecast)
+        {
+            DaytimeWeather.Add(new DayTimeWeatherModel(weather));
         }
 
+        FiveDayWeather = fiveDayWeather.GetSortedFiveDayForecast();
+
+        SaveSettings();
+    }
+
+    private void SaveSettings()
+    {
+        _settings.CurrentWeather = CurrentWeatherModel;
+        _settings.FiveDayWeather = FiveDayWeather;
+        _settings.DaytimeWeather = DaytimeWeather;
     }
 }

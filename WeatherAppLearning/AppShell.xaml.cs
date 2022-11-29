@@ -1,6 +1,4 @@
-﻿using WeatherAppLearning.ViewModels;
-
-namespace WeatherAppLearning;
+﻿namespace WeatherAppLearning;
 
 public partial class AppShell : Shell
 {
@@ -8,7 +6,9 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 
-		BindingContext = viewModel;
-		FlyoutBackground.BindingContext = viewModel;
+        BindingContext = viewModel;
+        FlyoutBackground.BindingContext = viewModel;
+
+        viewModel.IsActive = true;
     }
 }

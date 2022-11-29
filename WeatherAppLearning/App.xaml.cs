@@ -1,15 +1,11 @@
-﻿using WeatherAppLearning.ViewModels;
-
-namespace WeatherAppLearning;
+﻿namespace WeatherAppLearning;
 
 public partial class App : Application
 {
-	public App()
+	public App(AppShellViewModel appShellViewModel)
 	{
-		AppShellViewModel appShellViewModel = new AppShellViewModel();
-
-		InitializeComponent();
+        InitializeComponent();
 
 		MainPage = new AppShell(appShellViewModel);
-	}
+    }
 }

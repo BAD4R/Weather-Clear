@@ -3,7 +3,7 @@ using OpenWeatherMap.NetClient.Extensions;
 using OpenWeatherMap.NetClient.Models;
 using System.Globalization;
 using WeatherAppLearning.Pages;
-using WeatherAppLearning.ViewModels;
+using WeatherAppLearning.Services;
 
 namespace WeatherAppLearning;
 
@@ -13,8 +13,8 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
-			.UseMauiCommunityToolkit()
 			.UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,6 +29,8 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<CurrentWeatherPage>();
 		builder.Services.AddSingleton<OptionsPage>();
+        builder.Services.AddSingleton<AppShellViewModel>();
+        builder.Services.AddSingleton<ISettings, Settings>();
 
         builder.Services.AddSingleton<CurrentWeatherPageViewModel>();
         builder.Services.AddSingleton<OptionsPageViewModel>();

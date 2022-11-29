@@ -349,7 +349,7 @@
     </Style>
 
     <Style ApplyToDerivedTypes="True" TargetType="Page">
-        <Setter Property="Padding" Value="0" />
+        <Setter Property="Padding" Value="20" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" />
     </Style>
 
