@@ -3,7 +3,7 @@ using WeatherAppLearning.Extensions;
 
 namespace WeatherAppLearning.Models;
 
-public struct DayTimeWeatherModel
+public readonly struct DayTimeWeatherModel
 {
     public DayTimeWeatherModel(Forecast5Days.Weather weather)
     {
@@ -14,8 +14,8 @@ public struct DayTimeWeatherModel
         ImageSource = weather.GetIconAndColors().ImageSource;
     }
 
-    public string Time { get; }
-    public string Temperature { get; }
-    public string PrecipitationProbability { get; }
-    public string ImageSource { get; }
+    public string Time { get; init;  }
+    public string Temperature { get; init; }
+    public string PrecipitationProbability { get; init;  }
+    public string ImageSource { get; init;  }
 }

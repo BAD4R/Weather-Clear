@@ -8,8 +8,10 @@ internal static class WeatherExtensions
     public static IconAndColorsForWeather GetIconAndColors(this CurrentWeather currentWeather) => GetIconAndColors(currentWeather.WeatherConditionId, currentWeather.WeatherIcon);
     public static IconAndColorsForWeather GetIconAndColors(this Forecast5Days.Weather weather) => GetIconAndColors(weather.WeatherConditionId, weather.WeatherIcon);
 
-    private static IconAndColorsForWeather GetIconAndColors(int id, string icon)
+    private static IconAndColorsForWeather GetIconAndColors(int id, string? icon)
     {
+        icon ??= "d";
+
         Application.Current!.Resources.TryGetValue("GradientOneGrayDayNight", out var gradientOneGrayDayNight);
         Application.Current!.Resources.TryGetValue("GradientTwoGrayDayNight", out var gradientTwoGrayDayNight);
         Application.Current!.Resources.TryGetValue("GradientOneDarkGrayDNight", out var gradientOneDarkGrayDNight);

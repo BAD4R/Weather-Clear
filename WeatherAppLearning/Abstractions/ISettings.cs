@@ -1,8 +1,10 @@
-﻿namespace WeatherAppLearning.Abstractions;
+﻿using WeatherAppLearning.Models;
+
+namespace WeatherAppLearning.Abstractions;
 
 public interface ISettings
 {
-    public string CityName { get; set; }
-
-    public bool IsDefault(string propertyName);
+    public CurrentWeatherPageModel CurrentWeather { get; set; }
+    public IReadOnlyList<FiveDayWeatherModel> FiveDayWeather { get; set; }
+    public IEnumerable<DayTimeWeatherModel> DaytimeWeather { get; set; }
 }

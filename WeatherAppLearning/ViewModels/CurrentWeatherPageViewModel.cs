@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using WeatherAppLearning.Messages;
 using OpenWeatherMap.NetClient;
 using CommunityToolkit.Mvvm.Input;
-using WeatherAppLearning.Services;
 using WeatherAppLearning.Models;
 using System.Collections.ObjectModel;
 using WeatherAppLearning.Abstractions;
@@ -17,26 +16,33 @@ public partial class CurrentWeatherPageViewModel : ObservableRecipient, IRecipie
     {
         _openWeatherMap = openWeatherMap;
         _settings = settings;
+
+        _currentWeatherModel = settings.CurrentWeather;
+        _fiveDayWeather = settings.FiveDayWeather;
+        DaytimeWeather = new ObservableCollection<DayTimeWeatherModel>(settings.DaytimeWeather);
     }
+
+    private const string DefaultCityName = "New York";
+
     private readonly IOpenWeatherMap _openWeatherMap;
     private readonly ISettings _settings;
 
     [ObservableProperty]
-    private CurrentWeatherPageModel _currentWeatherModel = new();
+    private CurrentWeatherPageModel _currentWeatherModel;
 
     [ObservableProperty]
-    private IReadOnlyList<FiveDayWeatherModel> _fiveDayWeather = Array.Empty<FiveDayWeatherModel>();
+    private IReadOnlyList<FiveDayWeatherModel> _fiveDayWeather;
 
-    public ObservableCollection<DayTimeWeatherModel> DaytimeWeather { get; } = new();
+    public ObservableCollection<DayTimeWeatherModel> DaytimeWeather { get; }
 
     [RelayCommand]
     private async Task CurrentWeatherPageLoaded()
     {
-        var cityName = _settings.CityName;
-
         try
         {
-            if (_settings.IsDefault(nameof(Settings.CityName)))
+            var cityName = CurrentWeatherModel.CityName;
+
+            if (string.IsNullOrEmpty(cityName))
             {
                 var location = await Geolocation.Default.GetLastKnownLocationAsync() ??
                                await Geolocation.Default.GetLocationAsync();
@@ -45,11 +51,11 @@ public partial class CurrentWeatherPageViewModel : ObservableRecipient, IRecipie
                     await _openWeatherMap.CurrentWeather.GetByCoordinatesAsync(location!.Latitude, location.Longitude);
 
                 cityName = weatherForecastByCoordinatesAsync is null
-                    ? cityName
+                    ? DefaultCityName
                     : weatherForecastByCoordinatesAsync.CityName;
             }
 
-            var weatherForecast = await _openWeatherMap.CurrentWeather.QueryAsync(cityName);
+            var weatherForecast = (await _openWeatherMap.CurrentWeather.QueryAsync(cityName))!;
             CurrentWeatherModel = new CurrentWeatherPageModel(weatherForecast);
 
             await InitializeFiveDayWeather(cityName);
@@ -74,14 +80,18 @@ public partial class CurrentWeatherPageViewModel : ObservableRecipient, IRecipie
 
     public async void Receive(ChangeCityNameMessage message)
     {
-        _settings.CityName = message.Value;
-
         try
         {
-            var weather = await _openWeatherMap.CurrentWeather.QueryAsync(_settings.CityName);
+            var weather = await _openWeatherMap.CurrentWeather.QueryAsync(message.Value);
+            if (weather is null)
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Не найдено", "Указанный город не найден", "OK");
+                return;
+            }
+
             CurrentWeatherModel = new CurrentWeatherPageModel(weather);
             WeakReferenceMessenger.Default.Send(new ChangeGradientColorsMessage((CurrentWeatherModel.GradientColorOne, CurrentWeatherModel.GradientColorTwo)));
-
+            
             await InitializeFiveDayWeather(message.Value);
 
             await Shell.Current.GoToAsync("//currentWeatherPage");
@@ -104,5 +114,14 @@ public partial class CurrentWeatherPageViewModel : ObservableRecipient, IRecipie
         }
 
         FiveDayWeather = fiveDayWeather.GetSortedFiveDayForecast();
+
+        SaveSettings();
+    }
+
+    private void SaveSettings()
+    {
+        _settings.CurrentWeather = CurrentWeatherModel;
+        _settings.FiveDayWeather = FiveDayWeather;
+        _settings.DaytimeWeather = DaytimeWeather;
     }
 }

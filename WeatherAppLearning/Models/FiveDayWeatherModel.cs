@@ -1,6 +1,6 @@
 ﻿namespace WeatherAppLearning.Models;
 
-public struct FiveDayWeatherModel
+public readonly struct FiveDayWeatherModel
 {
     public FiveDayWeatherModel(double temperatureMaxLong, double temperatureMinLong, double precipitationProbabilityPercent, DateTime dateTime)
     {
@@ -10,8 +10,8 @@ public struct FiveDayWeatherModel
         PrecipitationProbability = (precipitationProbabilityPercent*100).ToString("0")+"%";
     }
 
-    public string Date { get; }
-    public string TemperatureMax { get; }
-    public string TemperatureMin { get; }
-    public string PrecipitationProbability { get; }
+    public string Date { get; init; }
+    public string TemperatureMax { get; init; }
+    public string TemperatureMin { get; init;  }
+    public string PrecipitationProbability { get; init;  }
 }
