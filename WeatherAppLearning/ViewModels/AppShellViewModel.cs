@@ -1,6 +1,4 @@
-﻿using WeatherAppLearning.Abstractions;
-
-namespace WeatherAppLearning.ViewModels;
+﻿namespace WeatherAppLearning.ViewModels;
 
 public partial class AppShellViewModel : GradientViewModelBase
 {

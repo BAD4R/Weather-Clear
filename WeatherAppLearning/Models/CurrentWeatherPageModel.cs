@@ -1,5 +1,4 @@
 ﻿using OpenWeatherMap.NetClient.Models;
-using WeatherAppLearning.Extensions;
 
 namespace WeatherAppLearning.Models;
 

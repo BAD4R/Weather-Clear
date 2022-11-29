@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace WeatherAppLearning.JsonConverters;
+namespace WeatherAppLearning.Infrastructure.JsonConverters;
 
 internal class ColorJsonConverter : JsonConverter<Color>
 {

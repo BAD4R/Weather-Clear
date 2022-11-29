@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging.Messages;
-using OpenWeatherMap.NetClient.Models;
 
-namespace WeatherAppLearning.Messages;
+namespace WeatherAppLearning.Infrastructure.Messages;
 
 public class ChangeGradientColorsMessage : ValueChangedMessage<(Color, Color)>
 {

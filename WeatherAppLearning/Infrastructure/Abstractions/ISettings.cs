@@ -1,6 +1,4 @@
-﻿using WeatherAppLearning.Models;
-
-namespace WeatherAppLearning.Abstractions;
+﻿namespace WeatherAppLearning.Infrastructure.Abstractions;
 
 public interface ISettings
 {

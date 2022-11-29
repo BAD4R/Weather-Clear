@@ -2,10 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using CommunityToolkit.Mvvm.ComponentModel;
-using WeatherAppLearning.Abstractions;
-using WeatherAppLearning.JsonConverters;
-using WeatherAppLearning.Models;
+using WeatherAppLearning.Infrastructure.JsonConverters;
 
 namespace WeatherAppLearning.Services;
 

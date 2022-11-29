@@ -1,6 +1,4 @@
-﻿using WeatherAppLearning.ViewModels;
-
-namespace WeatherAppLearning;
+﻿namespace WeatherAppLearning;
 
 public partial class AppShell : Shell
 {

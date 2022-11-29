@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<abstractions:BasePage
+<abstractions1:BasePage
     x:Class="WeatherAppLearning.Pages.OptionsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:abstractions="clr-namespace:WeatherAppLearning.Abstractions"
+    xmlns:abstractions1="clr-namespace:WeatherAppLearning.Infrastructure.Abstractions"
     xmlns:mct="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewModel="clr-namespace:WeatherAppLearning.ViewModels"
@@ -44,4 +44,4 @@
         </HorizontalStackLayout>
 
     </VerticalStackLayout>
-</abstractions:BasePage>
+</abstractions1:BasePage>

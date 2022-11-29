@@ -1,8 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using WeatherAppLearning.Messages;
-
-namespace WeatherAppLearning.Abstractions;
+﻿namespace WeatherAppLearning.Infrastructure.Abstractions;
 
 public abstract partial class GradientViewModelBase : ObservableRecipient, IRecipient<ChangeGradientColorsMessage>
 {

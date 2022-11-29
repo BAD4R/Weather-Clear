@@ -1,5 +1,3 @@
-using WeatherAppLearning.ViewModels;
-
 namespace WeatherAppLearning.Pages;
 
 public partial class OptionsPage

@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace WeatherAppLearning.Abstractions;
+﻿namespace WeatherAppLearning.Infrastructure.Abstractions;
 
 public abstract class BasePage<TViewModel> : ContentPage where TViewModel : ObservableRecipient
 {

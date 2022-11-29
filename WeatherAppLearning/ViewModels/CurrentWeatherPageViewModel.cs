@@ -1,14 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using WeatherAppLearning.Messages;
-using OpenWeatherMap.NetClient;
-using CommunityToolkit.Mvvm.Input;
-using WeatherAppLearning.Models;
-using System.Collections.ObjectModel;
-using WeatherAppLearning.Abstractions;
-using WeatherAppLearning.Extensions;
-
-namespace WeatherAppLearning.ViewModels;
+﻿namespace WeatherAppLearning.ViewModels;
 
 public partial class CurrentWeatherPageViewModel : ObservableRecipient, IRecipient<ChangeCityNameMessage>
 {

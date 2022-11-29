@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using WeatherAppLearning.ViewModels;
-
-namespace WeatherAppLearning;
+﻿namespace WeatherAppLearning;
 
 public partial class App : Application
 {

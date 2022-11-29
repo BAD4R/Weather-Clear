@@ -1,9 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using WeatherAppLearning.Abstractions;
-using WeatherAppLearning.Messages;
-
-namespace WeatherAppLearning.ViewModels;
+﻿namespace WeatherAppLearning.ViewModels;
 
 public partial class OptionsPageViewModel : GradientViewModelBase
 {

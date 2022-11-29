@@ -1,7 +1,6 @@
 ﻿using OpenWeatherMap.NetClient.Models;
-using WeatherAppLearning.Models;
 
-namespace WeatherAppLearning.Extensions;
+namespace WeatherAppLearning.Infrastructure.Extensions;
 
 internal static class WeatherExtensions
 {
