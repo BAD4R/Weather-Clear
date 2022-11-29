@@ -1,14 +1,20 @@
 ﻿using OpenWeatherMap.NetClient.Models;
-using WeatherAppLearning.Services;
+using WeatherAppLearning.Extensions;
 
 namespace WeatherAppLearning.Models;
 
 public struct CurrentWeatherPageModel
 {
+    public CurrentWeatherPageModel()
+    {
+        GradientColorOne = Color.FromRgba("#8DA2DB");
+        GradientColorTwo = Color.FromRgba("#6378AE");
+        ImageLocation = "clear_d.png";
+    }
+
     public CurrentWeatherPageModel(CurrentWeather currentWeather)
     {
-        var (imageSource, gradientColorOne, gradientColorTwo) =
-            GetWeatherIconService.GetIconAndColors(currentWeather.WeatherConditionId, currentWeather.WeatherIcon);
+        var (imageSource, gradientColorOne, gradientColorTwo) = currentWeather.GetIconAndColors();
 
         GradientColorOne = gradientColorOne;
         GradientColorTwo = gradientColorTwo;

@@ -1,4 +1,5 @@
-﻿using WeatherAppLearning.ViewModels;
+﻿using System.Diagnostics;
+using WeatherAppLearning.ViewModels;
 
 namespace WeatherAppLearning;
 
@@ -9,5 +10,5 @@ public partial class App : Application
         InitializeComponent();
 
 		MainPage = new AppShell(appShellViewModel);
-	}
+    }
 }

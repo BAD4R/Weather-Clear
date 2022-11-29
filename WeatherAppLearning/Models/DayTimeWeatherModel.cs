@@ -1,5 +1,5 @@
 ﻿using OpenWeatherMap.NetClient.Models;
-using WeatherAppLearning.Services;
+using WeatherAppLearning.Extensions;
 
 namespace WeatherAppLearning.Models;
 
@@ -11,7 +11,7 @@ public struct DayTimeWeatherModel
         Temperature = weather.Temperature.DegreesCelsius.ToString("0°");
         PrecipitationProbability = (weather.PrecipitationProbability.Value * 100).ToString("0") + "%";
 
-        ImageSource = GetWeatherIconService.GetIconAndColors(weather.WeatherConditionId, weather.WeatherIcon).imageSource;
+        ImageSource = weather.GetIconAndColors().ImageSource;
     }
 
     public string Time { get; }

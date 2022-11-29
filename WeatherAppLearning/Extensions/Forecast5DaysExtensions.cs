@@ -1,11 +1,11 @@
 ﻿using OpenWeatherMap.NetClient.Models;
 using WeatherAppLearning.Models;
 
-namespace WeatherAppLearning.Services;
+namespace WeatherAppLearning.Extensions;
 
-public class FiveDayForecastByDaysService
+internal static class Forecast5DaysExtensions
 {
-    public IReadOnlyList<FiveDayWeatherModel> GetSortedFiveDayForecast(Forecast5Days fiveDayWeather)
+    public static IReadOnlyList<FiveDayWeatherModel> GetSortedFiveDayForecast(this Forecast5Days fiveDayWeather)
     {
         var collection = new List<FiveDayWeatherModel>();
 

@@ -6,8 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 using WeatherAppLearning.Services;
 using WeatherAppLearning.Models;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using WeatherAppLearning.Abstractions;
+using WeatherAppLearning.Extensions;
 
 namespace WeatherAppLearning.ViewModels;
 
@@ -22,18 +22,17 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
     }
     private readonly IOpenWeatherMap _openWeatherMap;
     private readonly ISettings _settings;
-    private readonly FiveDayForecastByDaysService _fiveDayForecastByDaysService = new();
 
     [ObservableProperty]
-    private CurrentWeatherPageModel _currentWeatherModel;
+    private CurrentWeatherPageModel _currentWeatherModel = new();
 
     [ObservableProperty]
-    private IReadOnlyList<FiveDayWeatherModel> _fiveDayWeather;
+    private IReadOnlyList<FiveDayWeatherModel> _fiveDayWeather = Array.Empty<FiveDayWeatherModel>();
 
     public ObservableCollection<DayTimeWeatherModel> DaytimeWeather { get; } = new();
 
     [RelayCommand]
-    async Task CurrentWeatherPageLoaded()
+    private async Task CurrentWeatherPageLoaded()
     {
         var cityName = _settings.CityName;
 
@@ -45,8 +44,7 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
                                await Geolocation.Default.GetLocationAsync();
 
                 var weatherForecastByCoordinatesAsync =
-                    await _openWeatherMap.CurrentWeather.GetByCoordinatesAsync(location.Latitude,
-                        location.Longitude);
+                    await _openWeatherMap.CurrentWeather.GetByCoordinatesAsync(location!.Latitude, location.Longitude);
 
                 cityName = weatherForecastByCoordinatesAsync is null
                     ? cityName
@@ -80,7 +78,6 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
     {
         _settings.CityName = message.Value;
 
-
         try
         {
             var weather = await _openWeatherMap.CurrentWeather.QueryAsync(_settings.CityName);
@@ -103,11 +100,11 @@ public partial class CurrentWeatherPageViewModel : ObservableObject, IRecipient<
         DaytimeWeather.Clear();
         var fiveDayWeather = await _openWeatherMap.Forecast5Days.QueryAsync(cityName);
 
-        foreach (var weather in fiveDayWeather.Forecast)
+        foreach (var weather in fiveDayWeather!.Forecast)
         {
             DaytimeWeather.Add(new DayTimeWeatherModel(weather));
         }
 
-        FiveDayWeather = _fiveDayForecastByDaysService.GetSortedFiveDayForecast(fiveDayWeather);
+        FiveDayWeather = fiveDayWeather.GetSortedFiveDayForecast();
     }
 }
